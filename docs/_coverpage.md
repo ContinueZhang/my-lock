@@ -8,5 +8,5 @@
 * Multiple themes
 * Not build static html files
 
-[GitHub](https://github.com/docsifyjs/docsify/)
+[GitHub](https://github.com/ContinueZhang/my-lock)
 [快速开始](#快速开始)
