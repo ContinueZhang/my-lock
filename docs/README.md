@@ -14,7 +14,7 @@
 ### 读锁演示
            上锁语句：lock tables [tablename] read;
            解锁语句：unlock tables;
-           create table t_inquiry_lock(id int,name varchar(200));
+           create table t_inquiry_lock(id int,name varchar(200))engine='myisam';
            insert into t_inquiry_lock values(1,'小红');
            insert into t_inquiry_lock values(2,'小蓝');
            insert into t_inquiry_lock values(3,'小绿');
@@ -66,11 +66,31 @@
                 操作，不同之处写锁对于上锁的session允许查看修改和新增，对于非上锁的session不允许查看、修改、新增。
            
            
-                      
-            
 
 ## 行级锁
+           
 ### -共享锁
+           create table t_innodb_lock(id int,name varchar(200))engine='innodb';
+           insert into t_innodb_lock values(1,'红红');
+           insert into t_innodb_lock values(2,'蓝蓝');
+           insert into t_innodb_lock values(3,'绿绿');
+           create index test_innodb_a_ind on t_innodb_lock(id);
+           create index test_innodb_a_ind on t_innodb_lock(name);
+           
+           SESSION1:
+           set autocommit=0;
+           update t_innodb_lock set name='1224' where id=1;           
+           
+           SESSION2:
+           set autocommit=0;
+           update t_innodb_lock set name='1995' where id=1; -- 同行进行阻塞
+           update t_innodb_lock set name='1995' where id=2; -- 不同行成功
+           
+           异常可怕操作：
+                更新时如果where条件没有索引，需要全盘检索进行锁表；
+                更新时如果有索引但是索引是字符串没有加引号也会引起锁表；
+           
+           
 ### -排它锁
 
 
