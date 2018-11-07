@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 /**
  * Created by continue on 2018/11/7.
@@ -25,6 +27,33 @@ public class LockService {
     private ICBCMapper icbcMapper;
     @Autowired
     private ICBCDetailMapper icbcDetailMapper;
+
+
+    private Predicate<UserEntity> userPredicate = user -> {
+        if (null == user.getName() || "".equals(user.getName())) {
+            throw new RuntimeException("请输入姓名");
+        }
+        if (null == user.getAge()) {
+            throw new RuntimeException("请输入年龄");
+        }
+        return true;
+    };
+
+
+    private Predicate<ICBCEntity> icbcPredicate = icbc -> {
+        if (null == icbc.getUserId()) {
+            throw new RuntimeException("请请选择所属用户");
+        }
+        if (null == icbc.getBalance()) {
+            throw new RuntimeException("请输入资金");
+        }
+
+
+        if (0 >= icbc.getBalance()) {
+            throw new RuntimeException("资金必须大于0");
+        }
+        return true;
+    };
 
 
     public List<UserEntity> selectUserAll() {
@@ -77,13 +106,28 @@ public class LockService {
         icbcDetailMapper.insert(ide);
     }
 
+
     @Transactional(rollbackFor = Exception.class)
     public void addUser(UserEntity user) {
-        userMapper.insert(user);
+
+        BiConsumer<AddedOperation, Object> up = AddedOperation::checkNonNull;
+        up.accept(null, user);
+
+        if (userPredicate.test(user)) {
+            userMapper.insert(user);
+        }
     }
 
     @Transactional(rollbackFor = Exception.class)
     public void addIcbc(ICBCEntity icbc) {
-        icbcMapper.insert(icbc);
+
+
+        BiConsumer<AddedOperation, Object> up = AddedOperation::checkNonNull;
+        up.accept(null, icbc);
+
+        if (icbcPredicate.test(icbc)) {
+            icbcMapper.insert(icbc);
+        }
     }
+
 }

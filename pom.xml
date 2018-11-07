@@ -62,6 +62,19 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
 
+        <!--<dependency>-->
+        <!--<groupId>com.gitee.sunchenbin.mybatis.actable</groupId>-->
+        <!--<artifactId>mybatis-enhance-actable</artifactId>-->
+        <!--<version>1.0.3</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>net.minidev</groupId>
+            <artifactId>json-smart</artifactId>
+            <version>2.3</version>
+            <scope>compile</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
