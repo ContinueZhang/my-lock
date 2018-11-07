@@ -1,0 +1,46 @@
+<!--suppress ThymeleafVariablesResolveInspection -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+    <link rel="stylesheet" href="https://unpkg.com/hbook-ui/dist/css/hbook.min.css">
+    <script src="https://unpkg.com/hbook-ui/dist/js/hbook.min.js"></script>
+
+
+</head>
+<body>
+
+<div class="container">
+    <div class="row" style="height: 100px">
+
+    </div>
+    <div class="row">
+        <div class="col-md-12" style="text-align: center">
+            <span style="font-size: 50px;">添加银行卡</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form class="form-horizontal" th:action="@{/addIcbc}" method="post">
+                <div class="form-group form-line-input">
+                    <select class="form-control" placeholder="选择用户" name="userId">
+                        <option th:each="user,Stat:${userList}" th:text="${user.name}" th:value="${user.id}"></option>
+                    </select>
+                    <label></label>
+                    <span class="help-block"></span>
+                </div>
+
+                <div class="form-group form-line-input">
+                    <input class="form-control" name="balance" type="number" placeholder="资金">
+                    <label></label>
+                    <span class="help-block"></span>
+                </div>
+                <input type="submit" class="btn btn-mini btn-primary" value="添加"/>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

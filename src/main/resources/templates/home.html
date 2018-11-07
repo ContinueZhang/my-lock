@@ -1,0 +1,109 @@
+<!--suppress ThymeleafVariablesResolveInspection -->
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="content">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+    <link rel="stylesheet" href="https://unpkg.com/hbook-ui/dist/css/hbook.min.css">
+    <script src="https://unpkg.com/hbook-ui/dist/js/hbook.min.js"></script>
+
+
+</head>
+<body>
+
+<div class="container">
+    <div class="row" style="height: 100px">
+
+    </div>
+    <div class="row">
+        <div class="col-md-4" style="text-align: center">
+            <span style="font-size: 50px;">用户</span>
+        </div>
+        <div class="col-md-4" style="text-align: center">
+            <span style="font-size: 50px;">银行卡</span>
+        </div>
+        <div class="col-md-4" style="text-align: center">
+            <span style="font-size: 50px;">账单</span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <span class="btn btn-primary" style="cursor: pointer;" onclick="window.location.href='/user'">添加用户</span>
+        </div>
+        <div class="col-md-4">
+            <span class="btn btn-primary" style="cursor: pointer;" onclick="window.location.href='/icbc'">添加银行卡</span>
+        </div>
+        <div class="col-md-4">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>用户名</th>
+                    <th>年龄</th>
+                    <th>爱好</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user,Stat : ${userList}">
+                    <td th:text="${user.name}"></td>
+                    <td th:text="${user.age}"></td>
+                    <td th:text="${user.hobby}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>卡号</th>
+                    <th>余额</th>
+                    <th>所属用户</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="icbc,Stat : ${icbcList}">
+                    <td th:text="${icbc.id}"></td>
+                    <td th:text="${icbc.balance}"></td>
+                    <td th:text="${icbc.userId}"></td>
+                    <td style="line-height: 20px"><span class="btn btn-mini btn-success"
+                                                        style="height: 20px; cursor: pointer;"
+                                                        onclick="form(this)">转账</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <table class="table table-bordered table-hover">
+                <thead>
+                <tr>
+                    <th>卡号</th>
+                    <th>向卡号</th>
+                    <th>转账金额</th>
+                    <th>时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="icbcDetail,Stat : ${icbcDetailList}">
+                    <td th:text="${icbcDetail.icbcId}"></td>
+                    <td th:text="${icbcDetail.targetIcbcId}"></td>
+                    <td th:text="${icbcDetail.amount}"></td>
+                    <td th:text="${#calendars.format(icbcDetail.time,'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+<script language="javascript" type="text/javascript">
+    function form(obj) {
+        console.log(obj.parentElement);
+        // window.location.href = "/form";
+    }
+</script>
+</html>
