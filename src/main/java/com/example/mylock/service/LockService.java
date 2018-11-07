@@ -96,6 +96,7 @@ public class LockService {
             throw new RuntimeException("余额不足");
         }
 
+
         icbc.setBalance(balance);
         icbcMapper.updateByPrimaryKey(icbc);
         ICBCDetailEntity ide = new ICBCDetailEntity();
