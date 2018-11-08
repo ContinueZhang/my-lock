@@ -131,4 +131,10 @@ public class LockService {
         }
     }
 
+    public List<ICBCEntity> selectTAll() {
+
+        return icbcMapper.selectTAll();
+
+    }
+
 }

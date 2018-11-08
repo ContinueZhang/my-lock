@@ -1,12 +1,15 @@
 package com.example.mylock;
 
+import com.example.mylock.entity.ICBCEntity;
+import com.example.mylock.service.LockService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.DecimalFormat;
-import java.util.function.Consumer;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -14,6 +17,9 @@ import java.util.stream.IntStream;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MyLockApplicationTests {
+
+    @Autowired
+    private LockService lockService;
 
     interface IMoneyFormat {
         String format(int i);
@@ -38,6 +44,12 @@ public class MyLockApplicationTests {
         Function<Integer, String> function = i -> new DecimalFormat("#,###").format(i);
         myMoney.printMoney(function.andThen(s -> "人民币" + s));
 
+    }
+
+    @Test
+    public void selectTAll() {
+        List<ICBCEntity> icbcList = lockService.selectTAll();
+        icbcList.forEach(t -> System.out.println(t.toString()));
     }
 
     @Test
