@@ -17,6 +17,6 @@ public class ICBCDetailEntity {
     private Integer id;
     private Double amount;
     private Integer icbcId;
-    private Integer targetId;
+    private Integer targetIcbcId;
     private Date time;
 }

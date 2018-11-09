@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author continue
@@ -33,6 +34,8 @@ public class LockController {
         return "home";
     }
 
+    private int ii = 0;
+
     @RequestMapping(value = "/consume", method = RequestMethod.POST)
     public String consume(Model model,
                           @RequestParam("amount") double amount,
@@ -40,7 +43,17 @@ public class LockController {
                           @RequestParam("targetIcbcId") int targerIcbcId) {
         String message = "消费成功";
         try {
-            lockService.consume(amount, icbcId, targerIcbcId);
+
+            CountDownLatch latch = new CountDownLatch(1);
+            System.out.println("start...");
+
+            for (int i = 0; i < 2; i++) {
+                CounterTest counter = new CounterTest(latch, lockService, amount, icbcId, targerIcbcId);
+                counter.start();
+                System.out.println(i);
+            }
+            latch.countDown();
+            System.out.println("end");
         } catch (Exception e) {
             message = e.getMessage();
         }
@@ -49,10 +62,11 @@ public class LockController {
         return "redirect:/";
     }
 
-    @GetMapping("/form")
-    public String form(Model model) {
+    @GetMapping("/form/{targetIcbcId}")
+    public String form(Model model, @PathVariable("targetIcbcId") Integer targetIcbcId) {
 
         List<ICBCEntity> icbcList = lockService.selectIcbcAll();
+        model.addAttribute("targetIcbcId", targetIcbcId);
         model.addAttribute("icbcList", icbcList);
         return "form";
     }
@@ -86,4 +100,31 @@ public class LockController {
         return "redirect:/";
     }
 
+}
+
+class CounterTest extends Thread {
+    private CountDownLatch latch;
+    private LockService lockService;
+    private Double amount;
+    private Integer icbcId;
+    private Integer targerIcbcId;
+
+    public CounterTest(CountDownLatch latch, LockService lockService, Double amount, Integer icbcId, Integer targerIcbcId) {
+        this.latch = latch;
+        this.lockService = lockService;
+        this.amount = amount;
+        this.icbcId = icbcId;
+        this.targerIcbcId = targerIcbcId;
+    }
+
+    @Override
+    public void run() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        lockService.consume(amount, icbcId, targerIcbcId);
+
+    }
 }

@@ -102,8 +102,9 @@
 </body>
 <script language="javascript" type="text/javascript">
     function form(obj) {
-        console.log(obj.parentElement);
-        // window.location.href = "/form";
+
+        var targetIcbcId = obj.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.innerText;
+        window.location.href = "/form/" + targetIcbcId;
     }
 </script>
 </html>

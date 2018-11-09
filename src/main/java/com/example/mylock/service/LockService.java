@@ -8,10 +8,14 @@ import com.example.mylock.mapper.ICBCMapper;
 import com.example.mylock.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -86,25 +90,75 @@ public class LockService {
         return icbcDetailMapper.selectByPrimaryKey(id);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class,isolation = Isolation.SERIALIZABLE)
     public void consume(double amount, int icbcId, int targerIcbcId) {
 
+        //减少转账人的金额
         ICBCEntity icbc = icbcMapper.selectByPrimaryKey(icbcId);
         Double balance = icbc.getBalance();
         balance = balance - amount;
         if (balance < 0) {
             throw new RuntimeException("余额不足");
         }
-
-
         icbc.setBalance(balance);
-        icbcMapper.updateByPrimaryKey(icbc);
+        icbcMapper.updateByPrimaryKeySelective(icbc);
+
+        //增加接收人的金额
+        ICBCEntity icbcReceive = icbcMapper.selectByPrimaryKey(targerIcbcId);
+        icbcReceive.setBalance(icbcReceive.getBalance() + amount);
+        icbcMapper.updateByPrimaryKeySelective(icbcReceive);
+
         ICBCDetailEntity ide = new ICBCDetailEntity();
-        ide.setAmount(balance);
+        ide.setAmount(amount);
         ide.setIcbcId(icbcId);
-        ide.setTargetId(targerIcbcId);
+        ide.setTargetIcbcId(targerIcbcId);
         ide.setTime(new Date());
         icbcDetailMapper.insert(ide);
+    }
+
+    public static void main(String[] args) {
+
+//        Callable<Integer> callable = () -> 1;
+//
+//        ExecutorService executorService = Executors.newFixedThreadPool(1);
+//        Future<Integer> submit = executorService.submit(callable);
+//        try {
+//            System.out.println(submit.get());
+//        } catch (InterruptedException | ExecutionException e) {
+//            e.printStackTrace();
+//        } finally {
+//            executorService.shutdownNow();
+//        }
+
+        ExecutorService pool = Executors.newCachedThreadPool();
+
+        Runnable test = new Runnable() {
+            final AtomicInteger number = new AtomicInteger();
+            volatile boolean bol = false;
+
+            @Override
+            public void run() {
+                System.out.println(number.getAndIncrement());
+
+                synchronized (this) {
+                    try {
+                        if (!bol) {
+                            System.out.println(bol);
+                            bol = true;
+                            Thread.sleep(10000);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("并发数量为" + number.intValue());
+                }
+            }
+        };
+
+        for (int i = 0; i < 10; i++) {
+            pool.execute(test);
+        }
+
     }
 
 

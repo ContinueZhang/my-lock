@@ -1,6 +1,5 @@
 package com.example.mylock.provider;
 
-import com.example.mylock.entity.ICBCEntity;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.mapping.MappedStatement;
 import tk.mybatis.mapper.annotation.RegisterMapper;
@@ -44,8 +43,8 @@ public interface BaseUserMapper<T> {
             StringBuilder sql = new StringBuilder();
             sql.append(SqlHelper.selectAllColumns(entityClass));
             sql.append(SqlHelper.fromTable(entityClass, tableName(entityClass)));
-            sql.append(SqlHelper.fromTable(ICBCEntity.class, tableName(ICBCEntity.class)));
             sql.append(SqlHelper.orderByDefault(entityClass));
+            System.out.println(sql.toString());
             return sql.toString();
         }
     }
